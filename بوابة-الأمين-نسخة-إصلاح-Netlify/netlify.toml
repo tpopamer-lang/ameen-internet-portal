@@ -1,6 +1,10 @@
 [build]
-  command = "npm run build"
+  command = "npx -y bun@1.4.5 install --frozen-lockfile && npm run build"
   publish = "dist"
+
+# bun.lock uses lockfile format v2, which needs Bun 1.4+.
+[build.environment]
+  BUN_VERSION = "1.4.5"
 
 [functions]
   directory = "netlify/functions"

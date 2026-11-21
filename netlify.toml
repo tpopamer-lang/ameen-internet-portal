@@ -1,0 +1,6 @@
+# The app lives in a subfolder. Netlify switches into it before building, and
+# the subfolder's own netlify.toml (functions + /api redirects) then applies.
+[build]
+  base = "بوابة-الأمين-نسخة-إصلاح-Netlify"
+  command = "npx -y bun@1.4.5 install --frozen-lockfile && npm run build"
+  publish = "dist"
