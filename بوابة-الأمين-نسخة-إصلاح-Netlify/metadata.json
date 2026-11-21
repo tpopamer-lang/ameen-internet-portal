@@ -1,0 +1,8 @@
+{
+  "name": "Remix Remix بوابة الأمين للإنترنت | AL-AMEEN INTERNET PORTAL",
+  "description": "بوابة الأمين للإنترنت في مديرية الشحر – اليمن: خدمات الإنترنت اللاسلكي، كروت الإنترنت، الباقات الشهرية، تركيب أجهزة الاتصال والصيانة والدعم الفني.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

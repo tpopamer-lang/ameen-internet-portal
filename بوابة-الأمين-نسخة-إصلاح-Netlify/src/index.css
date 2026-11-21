@@ -1,0 +1,101 @@
+@import "tailwindcss";
+
+:root {
+  --obsidian: #030A14;
+  --navy: #07162B;
+  --navy-surface: #0B1F3A;
+  --electric: #0EA5E9;
+  --cyan: #22D3EE;
+  --cyan-bright: #67E8F9;
+  --gold: #D6B56D;
+  --canvas: #F8FAFC;
+  --canvas-soft: #F1F5F9;
+  --surface: #FFFFFF;
+  --ink: #071426;
+  --ink-muted: #475569;
+  --line: #E2E8F0;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    direction: rtl;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--canvas);
+    color: var(--ink);
+    font-family: "Tajawal", Tahoma, Arial, sans-serif;
+    line-height: 1.8;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, .font-display {
+    font-family: "Cairo", "Tajawal", Tahoma, Arial, sans-serif;
+  }
+
+  ::selection {
+    background-color: rgba(34, 211, 238, 0.24);
+    color: #030A14;
+  }
+}
+
+.font-mono-tech {
+  font-family: "JetBrains Mono", "Cairo", monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+.arch-grid-dark {
+  background-image:
+    linear-gradient(to right, rgba(34, 211, 238, 0.055) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(34, 211, 238, 0.055) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+.arch-grid-light {
+  background-image:
+    linear-gradient(to right, rgba(15, 23, 42, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.035) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+.arch-dot-dark {
+  background-image: radial-gradient(rgba(103, 232, 249, 0.16) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+@keyframes signal-drift {
+  0%, 100% {
+    opacity: 0.35;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    opacity: 0.65;
+    transform: translate3d(0, -4px, 0) scale(1.02);
+  }
+}
+
+.animate-signal-drift {
+  animation: signal-drift 8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .animate-signal-drift {
+    animation: none;
+  }
+}
