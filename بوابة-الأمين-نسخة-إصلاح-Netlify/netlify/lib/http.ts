@@ -59,3 +59,23 @@ export function rateLimit(event: NetlifyEvent, limit = 15): NetlifyResponse | nu
 export function methodNotAllowed(): NetlifyResponse {
   return json(405, { error: 'METHOD_NOT_ALLOWED', message: 'طريقة الطلب غير مدعومة.' }, { Allow: 'POST' });
 }
+
+/**
+ * Wraps an event-style handler as a modern Netlify Function
+ * (`export default async (req: Request) => Response`). The modern runtime is
+ * required for Netlify AI Gateway to inject AI provider credentials.
+ */
+export function toModernFunction(handler: NetlifyHandler) {
+  return async (req: Request): Promise<Response> => {
+    const body = req.method === 'GET' || req.method === 'HEAD' ? '' : await req.text();
+    const headers: Record<string, string> = {};
+    req.headers.forEach((value, key) => { headers[key] = value; });
+    const result = await handler({
+      httpMethod: req.method,
+      body: body || null,
+      isBase64Encoded: false,
+      headers,
+    });
+    return new Response(result.body, { status: result.statusCode, headers: result.headers });
+  };
+}

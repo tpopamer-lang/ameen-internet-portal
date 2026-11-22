@@ -10,36 +10,7 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
 
-[[redirects]]
-  from = "/api/assistant/chat"
-  to = "/.netlify/functions/assistant-chat"
-  status = 200
-  force = true
-
-[[redirects]]
-  from = "/api/voice/transcribe"
-  to = "/.netlify/functions/voice-transcribe"
-  status = 200
-  force = true
-
-[[redirects]]
-  from = "/api/voice/analyze"
-  to = "/.netlify/functions/voice-analyze"
-  status = 200
-  force = true
-
-[[redirects]]
-  from = "/api/voice/tts"
-  to = "/.netlify/functions/voice-tts"
-  status = 200
-  force = true
-
-[[redirects]]
-  from = "/api/health"
-  to = "/.netlify/functions/health"
-  status = 200
-  force = true
-
+# API routes (/api/...) are declared in each function's `config.path`.
 [[redirects]]
   from = "/*"
   to = "/index.html"

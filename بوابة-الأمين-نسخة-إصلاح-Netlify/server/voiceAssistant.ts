@@ -31,23 +31,9 @@ const ALLOWED_AUDIO_MIME_TYPES = new Set([
 ]);
 
 function getGeminiClient(): GoogleGenAI {
-  const apiKey = process.env.GEMINI_API_KEY?.trim();
-  if (!apiKey) {
-    throw new AssistantServiceError(
-      'GEMINI_API_KEY is not configured on the server.',
-      503,
-      'عذرًا، خدمة الذكاء الاصطناعي غير مهيأة حاليًا. يمكنك استخدام نموذج الطلب مباشرة أو التواصل معنا عبر الدعم الفني.'
-    );
-  }
-
-  return new GoogleGenAI({
-    apiKey,
-    httpOptions: {
-      headers: {
-        'User-Agent': 'aistudio-build',
-      },
-    },
-  });
+  // Netlify AI Gateway injects GEMINI_API_KEY and GOOGLE_GEMINI_BASE_URL at
+  // runtime, and the SDK picks them up automatically.
+  return new GoogleGenAI({});
 }
 
 export function normalizeAudioMimeType(rawMime: string): string | null {
@@ -179,7 +165,6 @@ export async function transcribeArabicVoice(params: {
     'فرّغ الكلام البشري المنطوق في هذا التسجيل الصوتي باللغة العربية بدقة وأمانة، وأرجع النص المنطوق فقط بدون مقدمات أو شروحات أو تنسيق. إذا كان التسجيل صامتًا أو لا يحتوي على صوت بشري واضح، أرجع نصًا فارغًا تمامًا ولا تخمّن أي كلام.';
 
   const modelsToTry = [
-    'gemini-3.5-transcribe',
     'gemini-4-hydrogen',
     'gemini-3.1-flash-lite',
   ];
@@ -532,58 +517,17 @@ ${JSON.stringify(safeCurrentDraft, null, 2)}
   );
 }
 
-export async function synthesizeArabicSpeech(text: string): Promise<string> {
-  const ai = getGeminiClient();
+/**
+ * Server-side speech synthesis.
+ *
+ * Netlify AI Gateway does not currently offer a text-to-speech model, so the
+ * server returns `null` and the browser reads the reply aloud with its built-in
+ * Arabic voice (Web Speech API). Returning quickly keeps the voice reply fast.
+ */
+export async function synthesizeArabicSpeech(text: string): Promise<string | null> {
   const cleanText = text.trim().slice(0, 420);
   if (!cleanText) {
     throw new AssistantServiceError('Empty TTS text', 400, 'لا يوجد نص للقراءة.');
   }
-
-  try {
-    const response = await ai.models.generateContent({
-      model: 'gemini-3.8-flash-lite-tts',
-      contents: [
-        {
-          role: 'user',
-          parts: [
-            {
-              text: cleanText,
-            },
-          ],
-        },
-      ],
-      config: {
-        responseModalities: ['AUDIO'],
-        speechConfig: {
-          voiceConfig: {
-            prebuiltVoiceConfig: { voiceName: 'Kore' },
-          },
-        },
-      },
-    });
-
-    const base64Audio =
-      response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
-    if (!base64Audio) {
-      throw new Error('No audio data returned by TTS model');
-    }
-    return base64Audio;
-  } catch (error: unknown) {
-    const errObj = error as { status?: number; message?: string };
-    const status = errObj?.status;
-    const msg = error instanceof Error ? error.message : String(error);
-    console.error(`[VoiceTTS] error (${status ?? 'unknown'}):`, msg);
-    if (status === 429 || msg.includes('RESOURCE_EXHAUSTED')) {
-      throw new AssistantServiceError(
-        `TTS quota exceeded (429): ${msg}`,
-        429,
-        'تم تجاوز حد الاستخدام المؤقت لنموذج الصوت (429)، يتم استخدام قارئ المتصفح كبديل.'
-      );
-    }
-    throw new AssistantServiceError(
-      `TTS error (${status ?? 502}): ${msg}`,
-      502,
-      'تعذر تشغيل الرد الصوتي من الخادم حاليًا، يمكنك قراءة الرد نصيًا.'
-    );
-  }
+  return null;
 }
