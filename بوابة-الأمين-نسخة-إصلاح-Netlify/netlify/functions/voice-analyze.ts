@@ -1,9 +1,10 @@
 import type { NetlifyHandler } from '../lib/http.ts';
+import { toModernFunction } from '../lib/http.ts';
 import { analyzeVoiceServiceRequest } from '../../server/voiceAssistant.ts';
 import { AssistantServiceError } from '../../server/assistant.ts';
 import { json, methodNotAllowed, parseBody, rateLimit } from '../lib/http.ts';
 
-export const handler: NetlifyHandler = async (event) => {
+const handler: NetlifyHandler = async (event) => {
   if (event.httpMethod !== 'POST') return methodNotAllowed();
   const limited = rateLimit(event);
   if (limited) return limited;
@@ -16,7 +17,7 @@ export const handler: NetlifyHandler = async (event) => {
     if (!item || typeof item !== 'object') return [];
     const turn = item as { role?: unknown; content?: unknown };
     if ((turn.role !== 'user' && turn.role !== 'assistant') || typeof turn.content !== 'string' || !turn.content.trim()) return [];
-    return [{ role: turn.role, content: turn.content.trim().slice(0, 1000) }];
+    return [{ role: turn.role as 'user' | 'assistant', content: turn.content.trim().slice(0, 1000) }];
   }) : [];
   const currentDraft = body.currentDraft && typeof body.currentDraft === 'object' ? body.currentDraft as Record<string, unknown> : {};
   try {
@@ -27,3 +28,7 @@ export const handler: NetlifyHandler = async (event) => {
     return json(500, { error: 'INTERNAL_ERROR', message: 'حدث خطأ غير متوقع أثناء تحليل طلبك. يرجى المحاولة مرة أخرى.' });
   }
 };
+
+export default toModernFunction(handler);
+
+export const config = { path: '/api/voice/analyze' };

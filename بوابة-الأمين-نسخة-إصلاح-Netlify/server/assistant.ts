@@ -160,23 +160,9 @@ ${DEVICES_NOTE}
 }
 
 function getGeminiClient(): GoogleGenAI {
-  const apiKey = process.env.GEMINI_API_KEY?.trim();
-  if (!apiKey) {
-    throw new AssistantServiceError(
-      'GEMINI_API_KEY is not configured on the server.',
-      503,
-      'عذرًا، خدمة المساعد الذكي غير مهيأة حاليًا. يمكنك التواصل معنا مباشرة عبر صفحة اتصل بنا أو الدعم الفني.'
-    );
-  }
-
-  return new GoogleGenAI({
-    apiKey,
-    httpOptions: {
-      headers: {
-        'User-Agent': 'aistudio-build',
-      },
-    },
-  });
+  // Netlify AI Gateway injects GEMINI_API_KEY and GOOGLE_GEMINI_BASE_URL at
+  // runtime, and the SDK picks them up automatically.
+  return new GoogleGenAI({});
 }
 
 function sleep(ms: number): Promise<void> {

@@ -1,9 +1,10 @@
 import type { NetlifyHandler } from '../lib/http.ts';
+import { toModernFunction } from '../lib/http.ts';
 import { transcribeArabicVoice } from '../../server/voiceAssistant.ts';
 import { AssistantServiceError } from '../../server/assistant.ts';
 import { json, methodNotAllowed, parseBody, rateLimit } from '../lib/http.ts';
 
-export const handler: NetlifyHandler = async (event) => {
+const handler: NetlifyHandler = async (event) => {
   if (event.httpMethod !== 'POST') return methodNotAllowed();
   const limited = rateLimit(event);
   if (limited) return limited;
@@ -21,3 +22,7 @@ export const handler: NetlifyHandler = async (event) => {
     return json(500, { error: 'INTERNAL_ERROR', message: 'تعذر تفريغ الصوت حاليًا. يمكنك كتابة طلبك نصيًا.' });
   }
 };
+
+export default toModernFunction(handler);
+
+export const config = { path: '/api/voice/transcribe' };
